@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560">
+<rect width="1280" height="560" fill="#091725"/>
+<g fill="none" stroke="#23435b" stroke-width="1"><path d="M0 440H1280M0 480H1280M0 520H1280M720 0V560M800 0V560M880 0V560M960 0V560M1040 0V560M1120 0V560M1200 0V560"/></g>
+<text x="64" y="90" fill="#42d7ba" font-family="sans-serif" font-size="19" letter-spacing="4">BIO-INSPIRED MOBILE MANIPULATION</text>
+<text x="60" y="178" fill="#f3f7fa" font-family="sans-serif" font-size="62" font-weight="bold">HEXAPOD</text>
+<text x="64" y="236" fill="#f3f7fa" font-family="sans-serif" font-size="36">Six legs. Six-axis reach.</text>
+<text x="64" y="302" fill="#9bb3c8" font-family="sans-serif" font-size="23">18 locomotion axes + 6 manipulation axes</text>
+<text x="64" y="345" fill="#9bb3c8" font-family="sans-serif" font-size="23">Gait coordination / perception / teleoperation</text>
+<g stroke="#42d7ba" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M870 282L795 231L742 276M876 328L784 345L735 401M887 370L821 427L795 490M1006 282L1081 231L1134 276M1000 328L1092 345L1141 401M989 370L1055 427L1081 490"/>
+<path d="M934 290L930 195L1000 137L1057 181" stroke="#f0b96e"/>
+<path d="M1057 181L1078 173M1057 181L1063 204" stroke="#f0b96e" stroke-width="8"/>
+</g><path d="M877 262L994 262L1020 330L988 391L885 391L855 330Z" fill="#173b50" stroke="#eaf6fb" stroke-width="4"/>
+<circle cx="934" cy="290" r="17" fill="#f0b96e"/>
+<text x="64" y="492" fill="#819bad" font-family="sans-serif" font-size="17">CONCEPT SCHEMATIC / REPLACE WITH YOUR PROJECT PHOTO</text>
+</svg>
