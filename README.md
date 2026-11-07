@@ -1,190 +1,139 @@
-# Hexapod Robot with a 6-DOF Manipulator
-### A bio-inspired platform for coordinated locomotion and target-directed interaction
+# Hexapod Mobile Manipulator
 
-![Concept schematic — replace with your real robot photograph](media/project-photo.svg)
+**A six-legged robot with an arm, built for places where wheels don't work and people shouldn't go.**
 
-**18 leg joints · 6 revolute arm joints · tripod / ripple / wave · Arduino Mega + Python**
+18 leg servos · arm with gripper · remote control with live video · onboard sensing
 
-[Quick start](#quick-start) · [Hardware](docs/HARDWARE.md) · [Control design](docs/CONTROL.md) · [Vision](docs/VISION.md) · [Experiments](docs/EXPERIMENTS.md) · [Add photos & video](media/README.md)
+<!-- HERO: best photo of the finished robot, or a GIF of it walking -->
+![Hexapod mobile manipulator](media/final/robot_01.jpg)
 
-> **Project status:** runnable software reference and proposed hardware integration,
-> derived from an attributed Arduino hexapod sketch. Leg geometry is source-backed;
-> the arm dimensions, calibration and integration are design assumptions. Physical
-> performance, terrain adaptation, AI accuracy, FPV latency and 1000–1200 m radio
-> operation have not been established by this release. Add your measured evidence
-> before presenting those capabilities as completed results.
+[Hardware](docs/hardware.md) · [Power system](docs/power.md) · [Controls](docs/controls.md) · [Performance](docs/performance.md) · [Credits](NOTICE.md)
 
-## Motivation
+---
 
-Insects coordinate multiple legs to trade walking speed for a wider support base.
-This project uses that principle to explore a practical question: **how can a
-legged robot maintain useful support while positioning a tool to interact with
-its environment?** A modular hexapod body provides six distributed contact points;
-a separate six-axis arm adds task-directed reach without redesigning the legs.
+## Why I built it
 
-The intended use is a small research and education platform for inspection,
-remote exploration and light object interaction in spaces where wheel access is
-limited. It is a basis for studying morphology, gait scheduling and mobile
-manipulation; assistive applications are a future research direction, not a
-clinical capability.
+Mines, nuclear power plants, pipe-filled industrial spaces, collapsed buildings in a rescue
+mission: they have the same problem for a robot. The floor is cluttered with pipes, cables, rubble and steps, and a wheeled robot gets
+stopped by the first obstacle. Legs can step over things, and an arm lets the robot do
+something once it gets there: move debris, press, pick up and carry a light object.
 
-## What the code provides
+<!-- Add: link to demo video -->
+**Demo video:** _add link_
 
-| Subsystem | Implementation | Evidence / limit |
+## Design inspiration
+
+Each part of the design borrows something from an animal, for a specific reason.
+
+**Spider: low and wide.** Spiders keep their body low with legs sprawled out. A low centre of
+mass and a wide footprint make uneven ground much less likely to tip them. The hexapod
+stands low (programmed 40 mm stance height) on a wide leg layout for the same reason.
+(Spiders have eight legs. The idea borrowed is the stance.)
+
+**Insects: three feet always down.** Ants and cockroaches walk in a tripod gait: three legs
+on the ground while the other three swing forward, then swap. The body is always supported
+by a stable triangle. The robot's gait is the same, with alternate legs half a cycle apart.
+
+**Scorpion: tool carried over the back.** A scorpion arches its tail over its back and grips
+with its pincers. The robot's arm is mounted on the top of the body, folded back out of the
+way while walking, with a gripper at the end. The legs never carry the arm's load directly.
+
+**Ants and beetles: carrying with the mouth, not the legs.** Ants carry food and debris in
+their mandibles while they keep walking on six legs, and beetles use mandibles and horns to
+grip and lift. The legs stay busy with walking, and the front end handles the load. The robot
+splits the work the same way: legs for locomotion, arm and gripper for carrying.
+
+## Specifications
+
+| | |
+|---|---|
+| Legs | 6 legs x 3 joints (coxa, femur, tibia), 18 x DS3235 Pro 35 kg.cm coreless metal-gear digital servos, 180 deg, 7.4 V |
+| Arm | base, shoulder (2 servos), elbow, 2 wrist joints, gripper. 4 x MG996R (base, shoulder, elbow) and 3 x MG90 (wrists, gripper) |
+| Main controller | Arduino Mega 2560 |
+| Remote | Arduino Uno, 2 joysticks, 2 pots, toggles, 16x2 LCD, nRF24L01 |
+| Camera | ESP32-CAM, MJPEG over its own WiFi network |
+| Edge payload | UNIHIKER K10: camera, screen, temperature, humidity, light, accelerometer |
+| Body tilt | K10 accelerometer (3-axis), used for tilt warning. The K10 has no gyroscope |
+| Power | 3S LiPo, 5200 mAh (11.1 V nominal, 12.6 V full). Three regulated rails: legs 7.4 V, arm 6.0 V, logic 5 V. See [docs/power.md](docs/power.md) |
+| Firmware | Arduino C++ (PlatformIO), MicroPython on the K10 |
+
+## Performance
+
+Design values come from the geometry and constants in the code. Measured values are filled in
+from tests; test methods are in [docs/performance.md](docs/performance.md).
+
+| Metric | Design value | Measured |
+|--------|--------------|----------|
+| Leg reach (coxa + femur + tibia) | 284.75 mm | |
+| Stance height | 40 mm | |
+| Foot lift per step | 100 mm | |
+| Stride per gait cycle | 60 mm | |
+| Femur servo torque, standing | about 5.8 kg.cm per kg of robot (tripod load, home pose) | |
+| Walking speed | about 35-60 mm/s (stride / cycle time, no slip) | |
+| Control rate, link | 50 Hz, 250 kbps | |
+| Link-loss stop | 500 ms | |
+| Control range | | |
+| Battery runtime | 46 Wh usable: about 35-70 min at 80-40 W average draw (planning figure) | |
+| Gripper payload | | |
+| Video latency | | |
+| Step / pipe height | | |
+
+## Build
+
+<!-- Replace each image and write a caption in your own words. Add rows if you like. -->
+
+| | | |
 |---|---|---|
-| Body geometry | Analytic FK/IK for six 3-joint legs | Dimensions and mount positions from supplied sketch |
-| Bio-inspired gait coordination | Python tripod, paired ripple and sequential wave trajectories | Kinematic simulation; flat-ground open-loop control |
-| Manipulator | Six revolute joints, numerical position and orientation IK, bounded motion | Proposed link geometry; no physical arm calibration |
-| Vision | K10 native QR and cat/dog demo; host post-NMS ONNX inference | No custom model weights or measured accuracy supplied |
-| Perception-to-action | QR label → surveyed target; calibrated pixel ray → planar target; arm IK | Stationary base only; no depth sensor or automatic grasping |
-| Teleoperation | 50 Hz NRF24 joystick transmitter; Mega receiver; host gait control | CRC, deadman, host/radio timeouts; range unmeasured |
-| Obstacle awareness | Front ultrasonic range inhibits motion below 250 mm or on timeout | Single direction only; not terrain sensing or avoidance planning |
-| FPV | Separate video-link wiring plan and receiver preview / recording tool | Video does not travel over NRF24; hardware and latency unverified |
-| Reproducibility | Unit/integration tests, configuration, CI, CSV traces and trial templates | See [validation record](docs/VALIDATION.md) |
+| ![](media/printing/printing_01.jpg) | ![](media/assembly/assembly_01.jpg) | ![](media/assembly/assembly_02.jpg) |
+| _Printing_ | _Leg assembly_ | _Body_ |
+| ![](media/electronics/wiring_01.jpg) | ![](media/electronics/power_01.jpg) | ![](media/arm/arm_01.jpg) |
+| _Wiring_ | _Power system_ | _Arm mounted on the body_ |
+| ![](media/final/robot_02.jpg) | ![](media/final/testing_01.jpg) | ![](media/final/robot_03.jpg) |
+| _Finished robot_ | _Testing_ | _Close-up_ |
 
-**DOF convention:** 24 independently commanded revolute joints = 18 body + 6 arm.
-The six arm joints are base yaw, shoulder pitch, elbow pitch, wrist roll, wrist
-pitch and tool roll. An active gripper would be a **25th actuator**, or would
-replace one arm axis and change the stated pose DOF. This release models a passive
-tool / contact probe; it does not claim an implemented grasp-and-release mechanism.
-
-![Ideal tripod, ripple and wave contact timing](media/gait-timing.svg)
-
-## System architecture
+## How it works
 
 ```mermaid
 flowchart LR
-    TX[Joystick + deadman / Uno] -->|NRF24 command packets| MCU[Arduino Mega / 24 servo outputs]
-    MCU -->|USB status + radio axes| HOST[Python / laptop or Linux companion]
-    HOST -->|CRC framed joint commands| MCU
-    K10[UNIHIKER K10 / native vision] -->|USB JSON events| HOST
-    CAM[Optional host camera + ONNX model] --> HOST
-    RANGE[Front ultrasonic sensor] --> MCU
-    MCU --> LEGS[6 legs / 18 axes]
-    MCU --> ARM[Arm / 6 axes]
-    FPV[Independent FPV camera + VTX] --> RX[Video receiver / monitor]
+    R["Remote (Uno + LCD)"] -->|"nRF24, 50 Hz"| M["Arduino Mega 2560"]
+    M --> L["18 leg servos"]
+    M --> A["Arm: 7 servos"]
+    C["ESP32-CAM"] -. "WiFi AP" .-> V["Phone or laptop"]
+    K["UNIHIKER K10"] --> S["Screen, sensors, tilt alert"]
 ```
 
-The Python controller runs on a laptop or additional Linux companion, **not on
-the K10**. K10 runs vendor MicroPython for native vision. Untethered operation
-therefore needs an onboard host and suitable USB/power connections. The original
-Arduino-only walking sketch is preserved as a source-text snapshot in `reference/` for provenance;
-it uses a different radio protocol and is not the integrated firmware.
+**Control.** The remote sends a packet 50 times a second. Toggle 1 picks the mode. In walk
+mode the joysticks drive the gait and the arm holds its pose. In arm mode the joysticks move
+arm joints, the pots set the wrist and gripper, and the legs stand. If no packet arrives for
+half a second, the robot stands still and the arm holds.
 
-## Quick start
+**Gait.** Tripod gait. Each foot target goes through inverse kinematics on the Mega to get
+the coxa, femur and tibia angles.
 
-Use Python 3.10 or newer, from the extracted project directory:
+**Power.** The battery never touches a servo or a board directly. The 3S pack feeds a 7.4 V leg rail
+(two converters, left and right), a 6.0 V arm rail (the highest voltage both MG90 and MG996R
+accept) and a 5 V logic rail, all behind a fuse and a master switch. Details and sizing in [docs/power.md](docs/power.md).
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
-python -m unittest discover -s tests -v
-hexapod simulate --gait tripod --seconds 10 --output logs/tripod.csv
-hexapod simulate --gait ripple --seconds 10 --output logs/ripple.csv
-hexapod simulate --gait wave --seconds 10 --output logs/wave.csv
-hexapod arm-demo --target 220 20 150
-python tools/summarize_run.py logs/wave.csv
-```
+**2.4 GHz.** The control link and the camera share the band, so the nRF24 runs on channel
+76 and the camera's WiFi is pinned to channel 1. They don't overlap.
 
-Windows PowerShell: activate with `.venv\Scripts\Activate.ps1`.
-Simulation generates 24 servo commands and an ideal support-polygon margin in CSV;
-it does not simulate contact forces, motor torque, slipping or a real camera.
-Arm demo prints the target, achieved position, joint angles and position error.
+## Limitations
 
-### Hardware bring-up
+- Walking is open loop. The K10's accelerometer is used for tilt warning only. With no gyroscope
+  there is no sensor fusion and no body leveling yet.
+- Video goes over WiFi and has much shorter range than the control link.
+- Radiation, dust and water are not addressed. Real nuclear or mine work would need a
+  hardened, sealed machine.
+- Runtime, payload and arm accuracy are not measured yet.
 
-Follow [wiring and calibration](docs/HARDWARE.md) before powering actuators.
-Install optional host dependencies and PlatformIO, then compile:
+## Next
 
-```bash
-python -m pip install -e '.[hardware,vision]' platformio==6.1.18
-pio run --project-dir firmware/receiver
-pio run --project-dir firmware/transmitter
-# Upload only after checking wiring, board selection and calibration:
-pio run --project-dir firmware/receiver --target upload
-pio run --project-dir firmware/transmitter --target upload
-```
+- Add a gyro (external IMU) and use it with the accelerometer to level the body on uneven ground.
+- Run the K10's built-in vision models (QR code, face, motion) on the robot.
+- Ripple and wave gaits, compared with the tripod on speed and stability.
+- Test over pipes and steps, and measure the height it can cross.
 
-Set measured servo offsets/signs/limits in `config/robot.json` and matching firmware
-limits. Only after supported single-joint calibration, change both the JSON
-`hardware_calibrated` flag and receiver `HARDWARE_CALIBRATED` constant to true.
-Rebuild/upload the receiver. Restore the NC stop loop; release the transmitter
-deadman and physical enable, then launch:
+Built by Divyansh Rahangdale.
 
-```bash
-hexapod run --port /dev/ttyACM0 --enable-motion --seconds 30
-# Add native K10 target events only after target coordinates are surveyed:
-hexapod run --port /dev/ttyACM0 --vision-port /dev/ttyACM1 \
-  --enable-motion --allow-vision-targets --seconds 30
-```
-
-Replace device paths with yours. Hold the receiver enable and transmitter deadman
-to permit motion. A fresh valid host frame, radio command, intact stop loop and
-clear front range are all required. A missing range sensor inhibits output.
-The robot must be supported and pre-positioned before enabling; hobby servos do
-not report their actual starting angle. Loss of output detaches servos and can
-remove holding torque. Use a physical servo-power emergency switch.
-
-## Research questions
-
-- **Morphology and fabrication:** how do leg dimensions, mounting geometry and
-  arm placement change workspace and the ideal support region?
-- **Locomotion tradeoffs:** how do tripod, ripple and wave schedules affect speed,
-  body motion, energy per metre and contact reliability?
-- **Manipulation and balance:** how does arm extension shift the combined centre
-  of mass, and when should the base stop or widen its stance?
-- **Perception-guided interaction:** what calibration and uncertainty limits are
-  needed before a detected target can produce a reliable tool approach?
-
-These questions connect the platform to computational robot design, robust
-manipulation and gait/balance control. They are future experiments, not results
-or claims of affiliation. [Research positioning](docs/RESEARCH_POSITIONING.md)
-explains the connections to CREATE, LASA and REHAssist using their public topics.
-
-## Project map
-
-```text
-config/robot.json             Geometry, assumed arm, calibration and control limits
-src/hexapod/                  FK/IK, gaits, arm, protocol, vision and controller
-firmware/receiver/            Mega servo receiver, radio bridge and range interlock
-firmware/transmitter/         Uno joystick / deadman / gait selector
-edge/k10/main.py              Native MicroPython vision event producer
-tests/                       Kinematic, protocol and controller checks
-tools/                       FPV receiver preview and CSV summary
-docs/                        Wiring, design, vision, experiments and provenance
-experiments/                 Blank field data template
-examples/                    Example event messages
-media/                       Replaceable schematic and media instructions
-reference/                   Supplied MIT Arduino source-text snapshot
-.github/workflows/           Python checks and firmware build jobs
-```
-
-## Demonstration and results
-
-**Photo:** replace the schematic above with `media/robot.jpg`.
-**Video:** add your hosted demonstration link here after uploading footage.
-See [media instructions](media/README.md) for a suggested sequence.
-
-| Metric | Result |
-|---|---|
-| Physical walking speed / terrain success | Not measured |
-| Arm payload / reach accuracy / repeatability | Not measured |
-| K10 inference FPS / classification accuracy | Not measured |
-| Reliable radio distance / packet delivery | Not measured; 1000–1200 m is a validation target |
-| FPV end-to-end latency | Not measured |
-| Battery runtime / energy per metre | Not measured |
-
-Populate these entries with dated trials and videos. [Experiment protocols](docs/EXPERIMENTS.md)
-include packet delivery, video latency, gait comparisons and arm error measurement.
-
-## Attribution and license
-
-The supplied `Hexapod_Arduino.ino` credits **Özgür Toprak Önsoy and Emre Kalem**
-(November 2025, Eskişehir, Türkiye) and carries the MIT license, copyright 2025
-Emre Kalem. This release preserves that file and notice. Leg dimensions, mount
-positions, pin order and the baseline FK/IK convention informed the new modules.
-The Python stack, new receiver/transmitter, proposed arm and documentation are
-additions; do not present the reference code as your original authorship.
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), [provenance](docs/PROVENANCE.md)
-and [LICENSE](LICENSE).
+The base hexapod design and its gait and kinematics are open source, by Emre Kalem and
+Ozgur Toprak Onsoy (MIT). Other sources are listed in [NOTICE.md](NOTICE.md).
