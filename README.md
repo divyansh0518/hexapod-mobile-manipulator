@@ -19,30 +19,47 @@ stopped by the first obstacle. Legs can step over things, and an arm lets the ro
 something once it gets there: move debris, press, pick up and carry a light object.
 
 <!-- Add: link to demo video -->
-**Demo video:** _add link_
+**Demo video:** 
 
-## Design inspiration
+## Design Inspiration
 
-Each part of the design borrows something from an animal, for a specific reason.
+The mechanical layout and locomotion of this platform are informed by research on multi-legged animals and hexapod robotics.
 
-**Spider: low and wide.** Spiders keep their body low with legs sprawled out. A low centre of
-mass and a wide footprint make uneven ground much less likely to tip them. The hexapod
-stands low (programmed 40 mm stance height) on a wide leg layout for the same reason.
-(Spiders have eight legs. The idea borrowed is the stance.)
+### 1. Crab-Inspired Mobility
 
-**Insects: three feet always down.** Ants and cockroaches walk in a tripod gait: three legs
-on the ground while the other three swing forward, then swap. The body is always supported
-by a stable triangle. The robot's gait is the same, with alternate legs half a cycle apart.
+The six-legged layout uses a wide stance with laterally distributed legs, providing a broad support base for navigating cluttered terrain. Crab-like sideways locomotion is a particularly relevant direction for this platform. Chen et al. (2022) experimentally demonstrated that sideways walking can outperform forward walking in both speed and energy efficiency on their 18-DOF hexapod.
 
-**Scorpion: tool carried over the back.** A scorpion arches its tail over its back and grips
-with its pincers. The robot's arm is mounted on the top of the body, folded back out of the
-way while walking, with a gripper at the end. The legs never carry the arm's load directly.
+*Current implementation: forward walking. Lateral crab gait is a potential future extension.*
 
-**Ants and beetles: carrying with the mouth, not the legs.** Ants carry food and debris in
-their mandibles while they keep walking on six legs, and beetles use mandibles and horns to
-grip and lift. The legs stay busy with walking, and the front end handles the load. The robot
-splits the work the same way: legs for locomotion, arm and gripper for carrying.
+### 2. Insect-Inspired Tripod Gait
 
+The robot uses an alternating tripod gait, a coordination pattern observed in insects such as cockroaches. Legs **0, 2 and 4** alternate with legs **1, 3 and 5**, with the two groups operating half a cycle apart. This creates alternating three-leg support phases.
+
+This gait pattern is studied in the biomechanics of six-legged runners by Full and Tu (1990). Its stability depends on factors including foot placement, duty factor and the position of the centre of mass.
+
+### 3. Stability and Support Geometry
+
+A wide stance and low body position are intended to improve resistance to tipping. During tripod locomotion, the three stance feet define a triangular support polygon. The projected centre of mass and its distance from the polygon boundary are important measures of static stability.
+
+These principles are discussed in hexapod stability research, including Ting et al. (1994) and Mahapatra et al. (2019). The platform's stability margin has not yet been experimentally measured.
+
+### 4. Legged Mobile Manipulation
+
+The platform combines six walking legs with a separately mounted arm and gripper. The legs provide mobility, while the arm performs object interaction. The arm folds over the chassis during walking to maintain a compact configuration.
+
+Research by Zheng et al. (2022) explores the integration of locomotion and manipulation in hexapod robots, highlighting the importance of support configuration and stability during manipulation.
+
+### References 
+
+1. **Chen, Y. et al. (2022).** [Sideways crab-walking is faster and more efficient than forward walking for a hexapod robot.](https://doi.org/10.1088/1748-3190/ac6847) *Bioinspiration & Biomimetics, 17(4).*
+
+2. **Full, R. J. & Tu, M. S. (1990).** [Mechanics of six-legged runners.](https://doi.org/10.1242/jeb.148.1.129) *Journal of Experimental Biology, 148, 129–146.*
+
+3. **Ting, L. H., Blickhan, R. & Full, R. J. (1994).** [Dynamic and static stability in hexapedal runners.](https://doi.org/10.1242/jeb.197.1.251) *Journal of Experimental Biology, 197, 251–269.*
+
+4. **Mahapatra, A., Roy, S. S. & Pratihar, D. K. (2019).** [Study on feet forces' distributions, energy consumption and dynamic stability measure of hexapod robot during crab walking.](https://doi.org/10.1016/j.apm.2018.09.015) *Applied Mathematical Modelling, 65, 717–744.*
+
+5. **Zheng, Y. et al. (2022).** [Different manipulation mode analysis of a radial symmetrical hexapod robot with leg–arm integration.](https://doi.org/10.1007/s11465-021-0664-0) *Frontiers of Mechanical Engineering, 17, Article 8.*
 ## Specifications
 
 | | |
@@ -135,5 +152,3 @@ accept) and a 5 V logic rail, all behind a fuse and a master switch. Details and
 
 Built by Divyansh Rahangdale.
 
-The base hexapod design and its gait and kinematics are open source, by Emre Kalem and
-Ozgur Toprak Onsoy (MIT). Other sources are listed in [NOTICE.md](NOTICE.md).
