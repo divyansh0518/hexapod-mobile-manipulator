@@ -129,5 +129,3 @@ flowchart TB
   hardened, sealed machine.
 
 
-Built by Divyansh Rahangdale.
-
