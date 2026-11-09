@@ -20,6 +20,7 @@ something once it gets there: move debris, press, pick up and carry a light obje
 
 
 **Demo video:** https://www.instagram.com/reel/DaDLhgQxw-o/?exln=ZTF6NHNwNGUyenFh
+
 **Building pictures:** https://drive.google.com/drive/u/7/folders/1v8lwiHUHrGsg1zEQj96tbzUH02H_Gp72
 
 ## Design Inspiration
