@@ -4,7 +4,7 @@
 
 18 leg servos · arm with gripper · remote control with live video · onboard sensing
 
-<!-- HERO: best photo of the finished robot, or a GIF of it walking -->
+
 ![Hexapod mobile manipulator](media/final/robot_01.jpg)
 
 [Hardware](docs/HARDWARE.md) · [Power system](docs/power.md) · [Controls](docs/CONTROL.md) 
@@ -18,8 +18,9 @@ mission: they have the same problem for a robot. The floor is cluttered with pip
 stopped by the first obstacle. Legs can step over things, and an arm lets the robot do
 something once it gets there: move debris, press, pick up and carry a light object.
 
-<!-- Add: link to demo video -->
+
 **Demo video:** https://www.instagram.com/reel/DaDLhgQxw-o/?exln=ZTF6NHNwNGUyenFh
+**Building pictures:** https://drive.google.com/drive/u/7/folders/1v8lwiHUHrGsg1zEQj96tbzUH02H_Gp72
 
 ## Design Inspiration
 
@@ -57,7 +58,7 @@ The robot is designed around one central idea: combine animal-inspired locomotio
 
 ## Build
 
-<!-- Replace each image and write a caption in your own words. Add rows if you like. -->
+
 
 | | | |
 |---|---|---|
