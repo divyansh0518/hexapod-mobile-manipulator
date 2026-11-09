@@ -23,7 +23,7 @@ something once it gets there: move debris, press, pick up and carry a light obje
 
 ## Design Inspiration
 
-The robot is designed around one central idea: combine animal-inspired locomotion, stability on difficult terrain, and manipulation capabilities in a single platform.
+The robot is designed around one central idea: combine animal-inspired locomotion, stability on difficult terrain, and manipulation capabilities in a single platform, The base hexapod and manipulator structure is adapted from the open-source design by Emre Kalem.
 
 **Crab-inspired morphology:**  The wide, laterally distributed leg arrangement takes inspiration from crabs and provides a broad support base. This geometry is useful for navigating cluttered terrain where wheel-based mobility can become restrictive. The current platform uses forward walking, while sideways crab locomotion remains a future extension.
 
