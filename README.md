@@ -23,32 +23,13 @@ something once it gets there: move debris, press, pick up and carry a light obje
 
 ## Design Inspiration
 
-The mechanical layout and locomotion of this platform are informed by research on multi-legged animals and hexapod robotics.
+The robot is designed around one central idea: combine animal-inspired locomotion, stability on difficult terrain, and manipulation capabilities in a single platform.
 
-### 1. Crab-Inspired Mobility
+**Crab-inspired morphology:**  The wide, laterally distributed leg arrangement takes inspiration from crabs and provides a broad support base. This geometry is useful for navigating cluttered terrain where wheel-based mobility can become restrictive. The current platform uses forward walking, while sideways crab locomotion remains a future extension.
 
-The six-legged layout uses a wide stance with laterally distributed legs, providing a broad support base for navigating cluttered terrain. Crab-like sideways locomotion is a particularly relevant direction for this platform. Chen et al. (2022) experimentally demonstrated that sideways walking can outperform forward walking in both speed and energy efficiency on their 18-DOF hexapod.
+**Insect-inspired locomotion:**  The robot uses an alternating tripod gait, inspired by the walking patterns of insects such as ants and cockroaches. Legs 0, 2 and 4 alternate with legs 1, 3 and 5, creating alternating three-leg support phases for coordinated movement.
 
-*Current implementation: forward walking. Lateral crab gait is a potential future extension.*
-
-### 2. Insect-Inspired Tripod Gait
-
-The robot uses an alternating tripod gait, a coordination pattern observed in insects such as cockroaches. Legs **0, 2 and 4** alternate with legs **1, 3 and 5**, with the two groups operating half a cycle apart. This creates alternating three-leg support phases.
-
-This gait pattern is studied in the biomechanics of six-legged runners by Full and Tu (1990). Its stability depends on factors including foot placement, duty factor and the position of the centre of mass.
-
-### 3. Stability and Support Geometry
-
-A wide stance and low body position are intended to improve resistance to tipping. During tripod locomotion, the three stance feet define a triangular support polygon. The projected centre of mass and its distance from the polygon boundary are important measures of static stability.
-
-These principles are discussed in hexapod stability research, including Ting et al. (1994) and Mahapatra et al. (2019). The platform's stability margin has not yet been experimentally measured.
-
-### 4. Legged Mobile Manipulation
-
-The platform combines six walking legs with a separately mounted arm and gripper. The legs provide mobility, while the arm performs object interaction. The arm folds over the chassis during walking to maintain a compact configuration.
-
-Research by Zheng et al. (2022) explores the integration of locomotion and manipulation in hexapod robots, highlighting the importance of support configuration and stability during manipulation.
-
+**Integrated manipulation:**  Unlike a conventional hexapod, this platform carries a robotic arm and gripper on its upper body. The legs handle terrain traversal while the arm enables object interaction. The arm folds over the chassis during locomotion to maintain a compact configuration.
 ### References 
 
 1. **Chen, Y. et al. (2022).** [Sideways crab-walking is faster and more efficient than forward walking for a hexapod robot.](https://doi.org/10.1088/1748-3190/ac6847) *Bioinspiration & Biomimetics, 17(4).*
@@ -70,30 +51,9 @@ Research by Zheng et al. (2022) explores the integration of locomotion and manip
 | Remote | Arduino Uno, 2 joysticks, 2 pots, toggles, 16x2 LCD, nRF24L01 |
 | Camera | ESP32-CAM, MJPEG over its own WiFi network |
 | Edge payload | UNIHIKER K10: camera, screen, temperature, humidity, light, accelerometer |
-| Body tilt | K10 accelerometer (3-axis), used for tilt warning. The K10 has no gyroscope |
-| Power | 3S LiPo, 5200 mAh (11.1 V nominal, 12.6 V full). Three regulated rails: legs 7.4 V, arm 6.0 V, logic 5 V. See [docs/power.md](docs/power.md) |
+| Body tilt | K10 accelerometer (3-axis), used for tilt warning. |
+| Power | 3S LiPo, 5200 mAh (11.1 V nominal, 12.6 V full). Three regulated rails: legs 7.4 V, arm 6.0 V, logic 5 V. See [docs/power.md] |
 | Firmware | Arduino C++ (PlatformIO), MicroPython on the K10 |
-
-## Performance
-
-Design values come from the geometry and constants in the code. Measured values are filled in
-from tests; test methods are in [docs/performance.md](docs/performance.md).
-
-| Metric | Design value | Measured |
-|--------|--------------|----------|
-| Leg reach (coxa + femur + tibia) | 284.75 mm | |
-| Stance height | 40 mm | |
-| Foot lift per step | 100 mm | |
-| Stride per gait cycle | 60 mm | |
-| Femur servo torque, standing | about 5.8 kg.cm per kg of robot (tripod load, home pose) | |
-| Walking speed | about 35-60 mm/s (stride / cycle time, no slip) | |
-| Control rate, link | 50 Hz, 250 kbps | |
-| Link-loss stop | 500 ms | |
-| Control range | | |
-| Battery runtime | 46 Wh usable: about 35-70 min at 80-40 W average draw (planning figure) | |
-| Gripper payload | | |
-| Video latency | | |
-| Step / pipe height | | |
 
 ## Build
 
@@ -141,14 +101,7 @@ accept) and a 5 V logic rail, all behind a fuse and a master switch. Details and
 - Video goes over WiFi and has much shorter range than the control link.
 - Radiation, dust and water are not addressed. Real nuclear or mine work would need a
   hardened, sealed machine.
-- Runtime, payload and arm accuracy are not measured yet.
 
-## Next
-
-- Add a gyro (external IMU) and use it with the accelerometer to level the body on uneven ground.
-- Run the K10's built-in vision models (QR code, face, motion) on the robot.
-- Ripple and wave gaits, compared with the tripod on speed and stability.
-- Test over pipes and steps, and measure the height it can cross.
 
 Built by Divyansh Rahangdale.
 
