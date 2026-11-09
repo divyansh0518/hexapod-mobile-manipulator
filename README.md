@@ -65,7 +65,7 @@ The robot is designed around one central idea: combine animal-inspired locomotio
 | _Printing_ | _Leg assembly_ | _Body_ |
 | ![](media/electronics/wiring_01.jpg) | ![](media/electronics/power_01.jpg) | ![](media/arm/arm_01.jpg) |
 | _Wiring_ | _Power system_ | _Arm mounted on the body_ |
-| ![](media/final/robot_02.jpg) | ![](media/final/testing_01.jpg) | ![](media/final/robot_03.jpg) |
+| ![](media/final/robot_02.jpg) | ![](media/final/robot_04.jpg) | ![](media/final/robot_03.jpg) |
 | _Finished robot_ | _Testing_ | _Close-up_ |
 
 ## System Architecture
