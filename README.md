@@ -7,7 +7,7 @@
 <!-- HERO: best photo of the finished robot, or a GIF of it walking -->
 ![Hexapod mobile manipulator](media/final/robot_01.jpg)
 
-[Hardware](docs/hardware.md) · [Power system](docs/power.md) · [Controls](docs/controls.md) · [Performance](docs/performance.md) · [Credits](NOTICE.md)
+[Hardware](docs/hardware.md) · [Power system](docs/power.md) · [Controls](docs/controls.md) 
 
 ---
 
