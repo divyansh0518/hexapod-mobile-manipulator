@@ -19,7 +19,7 @@ stopped by the first obstacle. Legs can step over things, and an arm lets the ro
 something once it gets there: move debris, press, pick up and carry a light object.
 
 <!-- Add: link to demo video -->
-**Demo video:** 
+**Demo video:** https://www.instagram.com/reel/DaDLhgQxw-o/?exln=ZTF6NHNwNGUyenFh
 
 ## Design Inspiration
 
