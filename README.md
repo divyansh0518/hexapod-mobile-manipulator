@@ -68,31 +68,57 @@ The robot is designed around one central idea: combine animal-inspired locomotio
 | ![](media/final/robot_02.jpg) | ![](media/final/testing_01.jpg) | ![](media/final/robot_03.jpg) |
 | _Finished robot_ | _Testing_ | _Close-up_ |
 
-## How it works
+## System Architecture
 
 ```mermaid
-flowchart LR
-    R["Remote (Uno + LCD)"] -->|"nRF24, 50 Hz"| M["Arduino Mega 2560"]
-    M --> L["18 leg servos"]
-    M --> A["Arm: 7 servos"]
-    C["ESP32-CAM"] -. "WiFi AP" .-> V["Phone or laptop"]
-    K["UNIHIKER K10"] --> S["Screen, sensors, tilt alert"]
+flowchart TB
+    subgraph CONTROL["01 · COMMAND & CONTROL"]
+        R["REMOTE CONTROLLER<br/>Arduino Uno<br/>Dual Joysticks · Potentiometers · LCD"]
+    end
+
+    subgraph CORE["02 · CENTRAL CONTROL UNIT"]
+        M["ARDUINO MEGA 2560<br/>Main Controller<br/>Command Processing · Servo Control"]
+    end
+
+    subgraph ACTUATION["03 · LOCOMOTION & MANIPULATION"]
+        L["HEXAPOD LOCOMOTION<br/>6 Legs · 18 Servos<br/>Alternating Tripod Gait"]
+        A["ROBOTIC MANIPULATOR<br/>7 Servos<br/>Arm · Wrist · Gripper"]
+    end
+
+    subgraph INTELLIGENCE["04 · ONBOARD SENSING & INTERFACE"]
+        K["UNIHIKER K10<br/>ESP32-S3 · Camera · Display"]
+        S["ENVIRONMENTAL & MOTION MONITORING<br/>Temperature · Humidity · Light<br/>Acceleration · Tilt Alerts"]
+        K --> S
+    end
+
+    subgraph VISION["05 · WIRELESS VISUAL FEEDBACK"]
+        C["ESP32-CAM<br/>Live Video Streaming"]
+        V["PHONE / LAPTOP<br/>MJPEG Video Feed"]
+        C -.->|"Wi-Fi Access Point"| V
+    end
+
+    R -->|"nRF24L01 · 50 Hz"| M
+    M -->|"Servo Control"| L
+    M -->|"Servo Control"| A
+    M <-->|"UART · 3.3V TTL"| K
+
+    classDef control fill:#183153,color:#fff,stroke:#4b83b5,stroke-width:2px
+    classDef motion fill:#164e45,color:#fff,stroke:#43a68e,stroke-width:2px
+    classDef sensing fill:#49345e,color:#fff,stroke:#a17ac5,stroke-width:2px
+    classDef vision fill:#68451f,color:#fff,stroke:#d5a45e,stroke-width:2px
+
+    class R,M control
+    class L,A motion
+    class K,S sensing
+    class C,V vision
+
+    style CONTROL fill:#18315318,stroke:#4b83b5
+    style CORE fill:#18315318,stroke:#4b83b5
+    style ACTUATION fill:#164e4518,stroke:#43a68e
+    style INTELLIGENCE fill:#49345e18,stroke:#a17ac5
+    style VISION fill:#68451f18,stroke:#d5a45e
 ```
 
-**Control.** The remote sends a packet 50 times a second. Toggle 1 picks the mode. In walk
-mode the joysticks drive the gait and the arm holds its pose. In arm mode the joysticks move
-arm joints, the pots set the wrist and gripper, and the legs stand. If no packet arrives for
-half a second, the robot stands still and the arm holds.
-
-**Gait.** Tripod gait. Each foot target goes through inverse kinematics on the Mega to get
-the coxa, femur and tibia angles.
-
-**Power.** The battery never touches a servo or a board directly. The 3S pack feeds a 7.4 V leg rail
-(two converters, left and right), a 6.0 V arm rail (the highest voltage both MG90 and MG996R
-accept) and a 5 V logic rail, all behind a fuse and a master switch. Details and sizing in [docs/power.md](docs/power.md).
-
-**2.4 GHz.** The control link and the camera share the band, so the nRF24 runs on channel
-76 and the camera's WiFi is pinned to channel 1. They don't overlap.
 
 ## Limitations
 
